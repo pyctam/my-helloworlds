@@ -6,9 +6,7 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +23,7 @@ public class HelloWorldClientTest {
     private HelloWorldClient client;
     private int runs = 10000;
 
-    @BeforeClass
+    @BeforeMethod
     public void initTestClass() throws InterruptedException {
         server = new HelloWorldServer();
         server.start();
@@ -36,6 +34,9 @@ public class HelloWorldClientTest {
 
     @Test(priority = 1)
     public void blockingResponseShouldContainRequestNumberOfEntities() throws InterruptedException {
+        System.out.println("Server: " + server);
+        System.out.println("Client: " + client);
+
         // given
         final int count = 10;
 
@@ -57,11 +58,14 @@ public class HelloWorldClientTest {
 
         long finished = System.nanoTime();
         long delta = TimeUnit.NANOSECONDS.toMillis(finished - started);
-        System.out.println("\n\nBlocking execution of " + runs + " completed in " + delta + " millis.");
+        System.out.println("\n\nBlocking execution of " + runs + "th request is completed in " + delta + " millis.");
     }
 
     @Test(priority = 2)
     public void asyncResponseShouldContainRequestNumberOfEntities() throws InterruptedException {
+        System.out.println("Server: " + server);
+        System.out.println("Client: " + client);
+
         // given
         final int count = 10;
 
@@ -69,6 +73,7 @@ public class HelloWorldClientTest {
 
         for (int i = 0; i < runs; i++) {
             // when
+            final int finalI = i;
             client.observeQuery(count).subscribe(new Observer<HelloWorld.Entity>() {
                 private List<HelloWorld.Entity> entities = new ArrayList<HelloWorld.Entity>();
                 private Disposable disposable;
@@ -96,7 +101,7 @@ public class HelloWorldClientTest {
 
                     long finished = System.nanoTime();
                     long delta = TimeUnit.NANOSECONDS.toMillis(finished - started);
-                    System.out.println("\n\nAsync execution of " + runs + " completed in " + delta + " millis.");
+                    System.out.println("\n\nAsync execution of " + (finalI +1) + "th request is completed in " + delta + " millis.");
                 }
             });
 
@@ -107,10 +112,10 @@ public class HelloWorldClientTest {
             System.out.print(".");
         }
 
-        Thread.sleep(30000);
+        Thread.sleep(60000);
     }
 
-    @AfterClass
+    @AfterMethod
     public void finalizeTestClass() {
         if (client != null) {
             client.shutdown();
@@ -121,3 +126,7 @@ public class HelloWorldClientTest {
         }
     }
 }
+
+
+
+
