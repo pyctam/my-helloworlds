@@ -45,6 +45,13 @@
             <artifactId>grpc-helloworld-server</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

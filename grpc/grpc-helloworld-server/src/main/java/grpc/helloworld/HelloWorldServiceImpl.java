@@ -17,7 +17,7 @@ public class HelloWorldServiceImpl extends HelloWorldServiceGrpc.HelloWorldServi
         String title = randomAlphanumeric(8) + " " + randomAlphanumeric(16);
         boolean active = RandomUtils.nextBoolean();
 
-        return HelloWorld.Entity.newBuilder().setSequence(i+1).setId(id).setTitle(title).setActive(active).build();
+        return HelloWorld.Entity.newBuilder().setSequence(i + 1).setId(id).setTitle(title).setActive(active).build();
     }
 
     @Override
@@ -25,13 +25,7 @@ public class HelloWorldServiceImpl extends HelloWorldServiceGrpc.HelloWorldServi
         int count = request.getCount();
 
         try {
-            for (int i = 0; i < count; i++) {
-                HelloWorld.Entity entity = buildEntity(i);
-                responseObserver.onNext(entity);
-                //System.out.println(System.nanoTime() + ": [1] entity (" + entity.getId() + "): " + entity);
-            }
-
-            responseObserver.onCompleted();
+            feed(responseObserver, count);
         } catch (Exception e) {
             responseObserver.onError(e);
         }
@@ -39,7 +33,7 @@ public class HelloWorldServiceImpl extends HelloWorldServiceGrpc.HelloWorldServi
 
     @Override
     public StreamObserver<HelloWorld.Request> queryAsync(final StreamObserver<HelloWorld.Entity> responseObserver) {
-        return new StreamObserver<HelloWorld.Request>(){
+        return new StreamObserver<HelloWorld.Request>() {
             private HelloWorld.Request request;
 
             public void onNext(HelloWorld.Request request) {
@@ -51,14 +45,29 @@ public class HelloWorldServiceImpl extends HelloWorldServiceGrpc.HelloWorldServi
             }
 
             public void onCompleted() {
-                for (int i = 0; i < request.getCount(); i++) {
-                    HelloWorld.Entity entity = buildEntity(i);
-                    responseObserver.onNext(entity);
-                    //System.out.println(System.nanoTime() + ": [1] entity (" + entity.getId() + "): " + entity);
-                }
-
-                responseObserver.onCompleted();
+                int count = request.getCount();
+                feed(responseObserver, count);
             }
         };
+    }
+
+    private void feed(StreamObserver<HelloWorld.Entity> responseObserver, int count) {
+        try {
+            for (int i = 0; i < count; i++) {
+                HelloWorld.Entity entity = buildEntity(i);
+                responseObserver.onNext(entity);
+
+                if (count > 10 && i >= 10) {
+                    try {
+                        System.out.println("Putting on 1000ms sleep after emitted " + entity);
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } finally {
+            responseObserver.onCompleted();
+        }
     }
 }

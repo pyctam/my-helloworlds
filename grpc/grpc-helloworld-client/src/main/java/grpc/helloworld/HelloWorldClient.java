@@ -12,6 +12,7 @@ import io.reactivex.ObservableOnSubscribe;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Hello world!
@@ -21,10 +22,14 @@ public class HelloWorldClient {
     private final HelloWorldServiceGrpc.HelloWorldServiceStub stubAsync;
     private final HelloWorldServiceGrpc.HelloWorldServiceBlockingStub stubSync;
 
-    public HelloWorldClient() {
+    public HelloWorldClient(long deadline) {
         this.channel = ManagedChannelBuilder.forAddress("localhost", HelloWorldServer.port).usePlaintext(true).build();
-        this.stubAsync = HelloWorldServiceGrpc.newStub(this.channel);
-        this.stubSync = HelloWorldServiceGrpc.newBlockingStub(this.channel);
+        this.stubAsync = buildStubAsync(deadline);
+        this.stubSync = buildStubSync(deadline);
+    }
+
+    public HelloWorldClient() {
+        this(0);
     }
 
     public io.reactivex.Observable<HelloWorld.Entity> observeQuery(final int count) {
@@ -44,12 +49,12 @@ public class HelloWorldClient {
                     }
                 });
 
-                try{
+                try {
                     HelloWorld.Request request = HelloWorld.Request.newBuilder().setCount(count).build();
 
                     requestObserver.onNext(request);
                     requestObserver.onCompleted();
-                }catch (Exception e){
+                } catch (Exception e) {
                     requestObserver.onError(e);
                 }
             }
@@ -57,13 +62,18 @@ public class HelloWorldClient {
     }
 
     public List<HelloWorld.Entity> query(int count) {
-        HelloWorld.Request request = HelloWorld.Request.newBuilder().setCount(count).build();
-        Iterator<HelloWorld.Entity> iterator = stubSync.queryBlocking(request);
         List<HelloWorld.Entity> list = new ArrayList<HelloWorld.Entity>();
 
-        while (iterator.hasNext()) {
-            HelloWorld.Entity entity = iterator.next();
-            list.add(entity);
+        try{
+            HelloWorld.Request request = HelloWorld.Request.newBuilder().setCount(count).build();
+            Iterator<HelloWorld.Entity> iterator = stubSync.queryBlocking(request);
+
+            while (iterator.hasNext()) {
+                HelloWorld.Entity entity = iterator.next();
+                list.add(entity);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
         return list;
@@ -74,5 +84,25 @@ public class HelloWorldClient {
             System.out.print("Shutting down managed channel.");
             this.channel.shutdown();
         }
+    }
+
+    private HelloWorldServiceGrpc.HelloWorldServiceBlockingStub buildStubSync(long deadline) {
+        HelloWorldServiceGrpc.HelloWorldServiceBlockingStub stub = HelloWorldServiceGrpc.newBlockingStub(this.channel);
+
+        if (deadline > 0) {
+            stub = stub.withDeadlineAfter(deadline, TimeUnit.MILLISECONDS);
+        }
+
+        return stub;
+    }
+
+    private HelloWorldServiceGrpc.HelloWorldServiceStub buildStubAsync(long deadline) {
+        HelloWorldServiceGrpc.HelloWorldServiceStub stub = HelloWorldServiceGrpc.newStub(this.channel);
+
+        if (deadline > 0) {
+            stub = stub.withDeadlineAfter(deadline, TimeUnit.MILLISECONDS);
+        }
+
+        return stub;
     }
 }
