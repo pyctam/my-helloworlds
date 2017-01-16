@@ -766,7 +766,7 @@
   #define MANUAL_BED_LEVELING  // Add display menu option for bed leveling.
 
   #if ENABLED(MANUAL_BED_LEVELING)
-    #define MBL_Z_STEP 0.01  // Step size while manually probing Z axis.
+    #define MBL_Z_STEP 0.1  // Step size while manually probing Z axis.
   #endif  // MANUAL_BED_LEVELING
 
   // Gradually reduce leveling correction until a set height is reached,
