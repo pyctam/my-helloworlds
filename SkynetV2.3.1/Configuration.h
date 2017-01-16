@@ -553,7 +553,7 @@
 // For example an inductive probe, or a setup that uses the nozzle to probe.
 // An inductive probe must be deactivated to go below
 // its trigger-point if hardware endstops are active.
-#define FIX_MOUNTED_PROBE
+//#define FIX_MOUNTED_PROBE
 
 // The BLTouch probe emulates a servo probe.
 // The default connector is SERVO 0. Set Z_ENDSTOP_SERVO_NR below to override.
@@ -584,24 +584,22 @@
 //    |           |
 //    O-- FRONT --+
 //  (0,0)
-//----------------------A6 3d printer ------------------------------------------
 
-// BELOW IS FOR THE FRONT MOUNTED SENSOR WITH 3D PRINTED MOUNT FOR ANET A6 kindly given to me by nico!
-//  link to the mount can be found here - http://www.thingiverse.com/thing:2001681
 
- #define X_PROBE_OFFSET_FROM_EXTRUDER -1
- #define Y_PROBE_OFFSET_FROM_EXTRUDER -54
- #define Z_PROBE_OFFSET_FROM_EXTRUDER -5
+
+//#define X_PROBE_OFFSET_FROM_EXTRUDER -28  // X offset: -left  +right  [of the nozzle]
+//#define Y_PROBE_OFFSET_FROM_EXTRUDER -45  // Y offset: -front +behind [the nozzle]
+//#define Z_PROBE_OFFSET_FROM_EXTRUDER 0   // Z offset: -below +above  [the nozzle]
 
 
 // X and Y axis travel speed (mm/m) between probes
-#define XY_PROBE_SPEED 11000
+#define XY_PROBE_SPEED 8000
 // Speed for the first approach when double-probing (with PROBE_DOUBLE_TOUCH)
 #define Z_PROBE_SPEED_FAST HOMING_FEEDRATE_Z
 // Speed for the "accurate" probe of each point
 #define Z_PROBE_SPEED_SLOW (Z_PROBE_SPEED_FAST / 2)
 // Use double touch for probing
-#define PROBE_DOUBLE_TOUCH
+//#define PROBE_DOUBLE_TOUCH
 
 //
 // Allen Key Probe is defined in the Delta example configurations.
@@ -646,7 +644,7 @@
 
 // Enable Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN to use the Z_MIN_PIN for your Z_MIN_PROBE.
 // The Z_MIN_PIN will then be used for both Z-homing and probing.
-#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
+//#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
 
 // To use a probe you must enable one of the two options above!
 
@@ -667,14 +665,14 @@
  * Example: `M851 Z-5` with a CLEARANCE of 4  =>  9mm from bed to nozzle.
  *     But: `M851 Z+1` with a CLEARANCE of 2  =>  2mm from bed to nozzle.
  */
-#define Z_CLEARANCE_DEPLOY_PROBE   10 // Z Clearance for Deploy/Stow
-#define Z_CLEARANCE_BETWEEN_PROBES  5 // Z Clearance between probe points
+//#define Z_CLEARANCE_DEPLOY_PROBE   10 // Z Clearance for Deploy/Stow
+//#define Z_CLEARANCE_BETWEEN_PROBES  5 // Z Clearance between probe points
 
 //
 // For M851 give a range for adjusting the Z probe offset
 //
-#define Z_PROBE_OFFSET_RANGE_MIN -20
-#define Z_PROBE_OFFSET_RANGE_MAX 20
+//#define Z_PROBE_OFFSET_RANGE_MIN -20
+//#define Z_PROBE_OFFSET_RANGE_MAX 20
 
 // For Inverting Stepper Enable Pins (Active Low) use 0, Non Inverting (Active High) use 1
 // :{ 0:'Low', 1:'High' }
@@ -713,7 +711,7 @@
 
 // @section homing
 
-//#define Z_HOMING_HEIGHT 4  // (in mm) Minimal z height before homing (G28) for Z clearance above the bed, clamps, ...
+#define Z_HOMING_HEIGHT 5  // (in mm) Minimal z height before homing (G28) for Z clearance above the bed, clamps, ...
                              // Be sure you have this distance over your Z_MAX_POS in case.
 
 // ENDSTOP SETTINGS:
@@ -755,20 +753,20 @@
 //============================ Mesh Bed Leveling ============================
 //===========================================================================
 
-//#define MESH_BED_LEVELING    // Enable mesh bed leveling.
+#define MESH_BED_LEVELING    // Enable mesh bed leveling.
 
 #if ENABLED(MESH_BED_LEVELING)
-  #define MESH_INSET 10        // Mesh inset margin on print area
+  #define MESH_INSET 25        // Mesh inset margin on print area
   #define MESH_NUM_X_POINTS 3  // Don't use more than 7 points per axis, implementation limited.
   #define MESH_NUM_Y_POINTS 3
   #define MESH_HOME_SEARCH_Z 4  // Z after Home, bed somewhere below but above 0.0.
 
   //#define MESH_G28_REST_ORIGIN // After homing all axes ('G28' or 'G28 XYZ') rest at origin [0,0,0]
 
-  //#define MANUAL_BED_LEVELING  // Add display menu option for bed leveling.
+  #define MANUAL_BED_LEVELING  // Add display menu option for bed leveling.
 
   #if ENABLED(MANUAL_BED_LEVELING)
-    #define MBL_Z_STEP 0.025  // Step size while manually probing Z axis.
+    #define MBL_Z_STEP 0.01  // Step size while manually probing Z axis.
   #endif  // MANUAL_BED_LEVELING
 
   // Gradually reduce leveling correction until a set height is reached,
@@ -805,7 +803,7 @@
  *   The result is a mesh, best for large or uneven beds.
  */
 //#define AUTO_BED_LEVELING_3POINT
-#define AUTO_BED_LEVELING_LINEAR
+//#define AUTO_BED_LEVELING_LINEAR
 //#define AUTO_BED_LEVELING_BILINEAR
 
 /**
@@ -891,7 +889,7 @@
 // - If stepper drivers time out, it will need X and Y homing again before Z homing.
 // - Move the Z probe (or nozzle) to a defined XY point before Z Homing when homing all axes (G28).
 // - Prevent Z homing when the Z probe is outside bed area.
-#define Z_SAFE_HOMING
+//#define Z_SAFE_HOMING
 
 #if ENABLED(Z_SAFE_HOMING)
   #define Z_SAFE_HOMING_X_POINT (X_MAX_POS / 2)    // X point for Z homing when homing all axis (G28).
